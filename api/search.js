@@ -13,21 +13,13 @@ function calcDistance(lat1, lng1, lat2, lng2) {
 export async function GET(request) {
   // ① URL の ?lat=..&lng=.. を読み取る
   const url = new URL(request.url);
-  const lat = Number(url.searchParams.get("lat"));
-  const lng = Number(url.searchParams.get("lng"));
+  const lat = parseFloat(url.searchParams.get("lat"));
+  const lng = parseFloat(url.searchParams.get("lng"));
 
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
     return Response.json(
       { error: "lat と lng を数値で指定してください" },
       { status: 400 },
-    );
-  }
-
-  if (!response.ok) {
-    console.error("Places API error:", data);
-    return Response.json(
-      { error: "お店の検索に失敗しました" },
-      { status: 502 },
     );
   }
 
@@ -67,6 +59,15 @@ export async function GET(request) {
 
   const data = await response.json();
 
+  if (!response.ok) {
+    console.error("Places API error:", data);
+    return Response.json(
+      { error: "お店の検索に失敗しました" },
+      { status: 502 },
+    );
+  }
+
+  // ③ アプリで使う形に整えて返す
   const shops = (data.places ?? []).map((place) => ({
     id: place.id,
     name: place.displayName?.text,
