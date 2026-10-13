@@ -111,16 +111,32 @@ function App() {
   const [selectedShop, setSelectedShop] = useState(null);
   const [location, setLocation] = useState(null);
   const [shops, setShops] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   async function searchAt(lat, lng, isDefault) {
     setLocation({ lat, lng, isDefault });
-    const response = await fetch(`/api/search?lat=${lat}&lng=${lng}`);
-    const data = await response.json();
-    setShops(data.shops ?? []);
-    setScreen("list");
+    try {
+      const response = await fetch(`/api/search?lat=${lat}&lng=${lng}`);
+      if (!response.ok) {
+        throw new Error("サーバーエラー: " + response.status);
+      }
+      const data = await response.json();
+      setShops(data.shops ?? []);
+      setScreen("list");
+    } catch (e) {
+      console.error(e);
+      setError(
+        "通信エラーが発生しました。電波の良い場所でもう一度お試しください。",
+      );
+    } finally {
+      setLoading(false);
+    }
   }
 
   function handleSearch() {
+    setLoading(true);
+    setError(null);
     navigator.geolocation.getCurrentPosition(
       (position) =>
         searchAt(position.coords.latitude, position.coords.longitude, false), // 成功：本当の現在地
@@ -132,7 +148,17 @@ function App() {
   return (
     <div>
       <h1>近くのごはん探し</h1>
-      {screen === "start" && <button onClick={handleSearch}>検索</button>}
+      {screen === "start" && (
+        <>
+          {error && <p>{error}</p>}
+          {loading ? (
+            <div className="spinner" />
+          ) : (
+            <button onClick={handleSearch}>検索</button>
+          )}
+        </>
+      )}
+
       {screen === "list" && (
         <>
           <button onClick={() => setScreen("start")}>戻る</button>
@@ -146,6 +172,7 @@ function App() {
           <p>
             現在地：{location.lat}, {location.lng}
           </p>
+          {shops.length === 0 && <p>近くにお店が見つかりませんでした</p>}
           <ShopList
             shops={shops}
             onSelect={(shop) => {
