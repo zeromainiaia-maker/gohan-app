@@ -89,7 +89,61 @@ Google Places を使う。無料枠で収まるようにする。
 
 ## 6. 構成図
 
-（未記入）
+### 全体像
+
+```mermaid
+flowchart LR
+  subgraph iPhone["iPhone（Safari / PWA）"]
+    React["Reactアプリ<br>画面表示・現在地取得"]
+    LS[("localStorage<br>お気に入り等（MVP後）")]
+  end
+
+  subgraph Vercel
+    Static["静的ファイル<br>HTML / JS / CSS"]
+    Fn["Vercel Functions<br>/api/search<br>/api/photo"]
+  end
+
+  subgraph Google
+    Places["Places API"]
+    Maps["Maps JavaScript API"]
+  end
+
+  Static -- "アプリを配信" --> React
+  React -- "緯度・経度・距離" --> Fn
+  Fn -- "サーバー用キー + FieldMask" --> Places
+  Places -- "店の一覧（JSON）" --> Fn
+  Fn -- "必要な項目だけに整形" --> React
+  React -- "ブラウザ用キー（リファラ制限）" --> Maps
+  React <--> LS
+```
+
+### 検索したときの流れ
+
+```mermaid
+sequenceDiagram
+  participant U as iPhone（React）
+  participant F as Vercel Functions
+  participant P as Google Places API
+
+  U->>U: 現在地を取得（拒否されたら名古屋駅）
+  U->>F: GET /api/search?lat=..&lng=..&radius=..
+  F->>P: 周辺検索（APIキー + FieldMask）
+  P-->>F: 店の一覧（JSON）
+  F-->>U: 必要な項目だけのJSON
+  U->>U: 一覧を表示
+  U->>F: GET /api/photo?name=..（写真）
+  F->>P: 写真を取得（APIキー）
+  P-->>F: 画像
+  F-->>U: 画像
+```
+
+### ポイント
+
+- **Places API のキーはサーバー（Vercel Functions）の環境変数にだけ置く**。ブラウザには一度も渡さない
+- **写真もキーが必要なので Functions 経由**で取得する
+- **地図（Maps JavaScript API）はブラウザから直接呼ぶ**。キーは見えてしまうため、HTTPリファラ制限で自分のドメイン以外から使えないようにする
+- **「Googleマップで開く」はただのリンク**（APIは使わない）
+- Functions で Google の大きなレスポンスを**必要な項目だけに絞ってから返す**ので、通信量が減り React 側もシンプルになる
 
 ## 7. マイルストーン
 
