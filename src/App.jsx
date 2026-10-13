@@ -69,7 +69,7 @@ function App() {
   const [selectedShop, setSelectedShop] = useState(null);
   return (
     <div>
-      <h1>ごはん探し</h1>
+      <h1>近くのごはん探し</h1>
       {screen === "start" && (
         <button onClick={() => setScreen("list")}>検索</button>
       )}
