@@ -84,6 +84,8 @@ export async function GET(request) {
     hours: place.regularOpeningHours?.weekdayDescriptions ?? [],
     mapUrl: place.googleMapsUri,
     photoName: place.photos?.[0]?.name,
+    lat: place.location.latitude,
+    lng: place.location.longitude,
   }));
 
   return Response.json({ shops });

@@ -1,4 +1,9 @@
 import { useState } from "react";
+import {
+  APIProvider,
+  Map as GoogleMap,
+  AdvancedMarker,
+} from "@vis.gl/react-google-maps";
 
 const FAKE_SHOPS = [
   {
@@ -60,17 +65,31 @@ function ShopItem({ shop, onSelect }) {
   );
 }
 
+function ShopMap({ lat, lng }) {
+  return (
+    <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
+      <GoogleMap
+        style={{ width: "100%", height: "250px" }}
+        defaultCenter={{ lat, lng }}
+        defaultZoom={17}
+        mapId="DEMO_MAP_ID"
+        disableDefaultUI
+      >
+        <AdvancedMarker position={{ lat, lng }} />
+      </GoogleMap>
+    </APIProvider>
+  );
+}
+
 function ShopDetail({ shop }) {
   return (
     <div>
       <h2>{shop.name}</h2>
       <p>ジャンル：{shop.genre}</p>
       <ul>
-        <ul>
-          {shop.hours.map((line) => (
-            <li key={line}>{line}</li>
-          ))}
-        </ul>
+        {shop.hours.map((line) => (
+          <li key={line}>{line}</li>
+        ))}
       </ul>
       {shop.photoName && (
         <img
@@ -82,6 +101,7 @@ function ShopDetail({ shop }) {
       <a href={shop.mapUrl} target="_blank" rel="noreferrer">
         Googleマップで開く
       </a>
+      <ShopMap lat={shop.lat} lng={shop.lng} />
     </div>
   );
 }
