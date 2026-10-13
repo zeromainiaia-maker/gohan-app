@@ -52,5 +52,22 @@ export async function GET(request) {
 
   // ③ Google の返事をそのまま返す（まずは中身を見るため）
   const data = await response.json();
-  return Response.json(data);
+
+  const shops = (data.places ?? []).map((place) => ({
+    id: place.id,
+    name: place.displayName?.text,
+    genre: place.primaryTypeDisplayName, // ← ジャンルの文字
+    distance: calcDistance(
+      lat,
+      lng,
+      place.location.latitude,
+      place.location.longitude,
+    ),
+    rating: place.rating, // ← 評価
+    openNow: place.currentOpeningHours?.openNow,
+    hours: place.regularOpeningHours?.weekdayDescriptions ?? [],
+    mapUrl: place.googleMapsUri,
+  }));
+
+  return Response.json({ shops });
 }
