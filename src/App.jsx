@@ -5,24 +5,33 @@ const shops = [
   { id: 4, name: 'カレー屋山下', genre: 'カレー', distance: 20000, rating: 5.0, hours: '00:00〜23:59' }
 ]
 
+function ShopList({shops}){
+  return (
+    <ul>
+      {shops.map((shop) =>(
+        <ShopItem key={shop.id} shop={shop} /> ))}
+    </ul>     
+  )
+}
 
+function ShopItem({shop}){
+  return (
+  <li>
+    {shop.name} {' '}
+          ({shop.genre}/
+          {shop.distance< 1000 ? shop.distance +"m":shop.distance/1000 +"km"}/
+          {shop.rating.toFixed(1)}/
+          {shop.hours})
+  </li>
+  )
+}
 
 
 function App(){
   return(
     <div>
       <h1>ごはん探し</h1>
-      <ul>
-        {shops.map((shop) =>(
-          <li key={shop.id}>
-          {shop.name} {' '}
-          ({shop.genre}/
-          {shop.distance< 1000 ? shop.distance +"m":shop.distance/1000 +"km"}/
-          {shop.rating.toFixed(1)}/
-          {shop.hours})
-          </li>
-        ))}
-      </ul>
+      <ShopList shops={shops} />
     </div>
   )
 }
