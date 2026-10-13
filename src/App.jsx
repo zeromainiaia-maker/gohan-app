@@ -5,41 +5,6 @@ import {
   AdvancedMarker,
 } from "@vis.gl/react-google-maps";
 
-const FAKE_SHOPS = [
-  {
-    id: 1,
-    name: "らーめん太郎",
-    genre: "ラーメン",
-    distance: 250,
-    rating: 4.2,
-    hours: "11:00〜22:00",
-  },
-  {
-    id: 2,
-    name: "寿司まる",
-    genre: "寿司",
-    distance: 600,
-    rating: 4.5,
-    hours: "17:00〜23:00",
-  },
-  {
-    id: 3,
-    name: "カレー屋インド",
-    genre: "カレー",
-    distance: 1200,
-    rating: 3.8,
-    hours: "11:30〜21:00",
-  },
-  {
-    id: 4,
-    name: "カレー屋山下",
-    genre: "カレー",
-    distance: 20000,
-    rating: 5.0,
-    hours: "00:00〜23:59",
-  },
-];
-
 const NAGOYA_STATION = { lat: 35.1709, lng: 136.8815 };
 
 function ShopList({ shops, onSelect }) {
