@@ -50,13 +50,12 @@ export async function GET(request) {
     },
   );
 
-  // ③ Google の返事をそのまま返す（まずは中身を見るため）
   const data = await response.json();
 
   const shops = (data.places ?? []).map((place) => ({
     id: place.id,
     name: place.displayName?.text,
-    genre: place.primaryTypeDisplayName, // ← ジャンルの文字
+    genre: place.primaryTypeDisplayName?.text, // ← ジャンルの文字
     distance: calcDistance(
       lat,
       lng,
