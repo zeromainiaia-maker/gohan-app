@@ -35,19 +35,19 @@ const shops = [
   },
 ];
 
-function ShopList({ shops }) {
+function ShopList({ shops, onSelect }) {
   return (
     <ul>
       {shops.map((shop) => (
-        <ShopItem key={shop.id} shop={shop} />
+        <ShopItem key={shop.id} shop={shop} onSelect={onSelect} />
       ))}
     </ul>
   );
 }
 
-function ShopItem({ shop }) {
+function ShopItem({ shop, onSelect }) {
   return (
-    <li>
+    <li onClick={() => onSelect(shop)}>
       {shop.name} ({shop.genre}/
       {shop.distance < 1000 ? shop.distance + "m" : shop.distance / 1000 + "km"}
       /{shop.rating.toFixed(1)}/{shop.hours})
@@ -55,18 +55,40 @@ function ShopItem({ shop }) {
   );
 }
 
+function ShopDetail({ shop }) {
+  return (
+    <div>
+      <h2>{shop.name}</h2>
+      <p>ジャンル：{shop.genre}</p>
+    </div>
+  );
+}
+
 function App() {
   const [screen, setScreen] = useState("start");
+  const [selectedShop, setSelectedShop] = useState(null);
   return (
     <div>
       <h1>ごはん探し</h1>
-
-      {screen === "start" ? (
+      {screen === "start" && (
         <button onClick={() => setScreen("list")}>検索</button>
-      ) : (
+      )}
+      {screen === "list" && (
         <>
-          <ShopList shops={shops} />
           <button onClick={() => setScreen("start")}>戻る</button>
+          <ShopList
+            shops={shops}
+            onSelect={(shop) => {
+              setSelectedShop(shop);
+              setScreen("detail");
+            }}
+          />
+        </>
+      )}
+      {screen === "detail" && (
+        <>
+          <button onClick={() => setScreen("list")}>戻る</button>
+          <ShopDetail shop={selectedShop} />
         </>
       )}
     </div>
