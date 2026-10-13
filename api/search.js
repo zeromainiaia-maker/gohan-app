@@ -40,6 +40,7 @@ export async function GET(request) {
           "places.currentOpeningHours.openNow", // 今営業中か
           "places.regularOpeningHours.weekdayDescriptions", // 曜日ごとの営業時間
           "places.googleMapsUri", // 「Googleマップで開く」用のURL
+          "places.photos", // 写真の名前
         ].join(","),
       },
       body: JSON.stringify({
@@ -82,6 +83,7 @@ export async function GET(request) {
     openNow: place.currentOpeningHours?.openNow,
     hours: place.regularOpeningHours?.weekdayDescriptions ?? [],
     mapUrl: place.googleMapsUri,
+    photoName: place.photos?.[0]?.name,
   }));
 
   return Response.json({ shops });

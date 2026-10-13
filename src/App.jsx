@@ -65,6 +65,23 @@ function ShopDetail({ shop }) {
     <div>
       <h2>{shop.name}</h2>
       <p>ジャンル：{shop.genre}</p>
+      <ul>
+        <ul>
+          {shop.hours.map((line) => (
+            <li key={line}>{line}</li>
+          ))}
+        </ul>
+      </ul>
+      {shop.photoName && (
+        <img
+          src={`/api/photo?name=${encodeURIComponent(shop.photoName)}`}
+          alt={shop.name}
+          style={{ width: "100%" }}
+        />
+      )}
+      <a href={shop.mapUrl} target="_blank" rel="noreferrer">
+        Googleマップで開く
+      </a>
     </div>
   );
 }
@@ -101,8 +118,9 @@ function App() {
           <button onClick={() => setScreen("start")}>戻る</button>
           {location.isDefault && (
             <p>
-              現在地を取得できなかったため、名古屋駅周辺を表示していますiPhone
-              の設定 → プライバシー → 位置情報サービスを確認してください）{" "}
+              現在地を取得できなかったため、名古屋駅周辺を表示しています（
+              iPhone の設定 → プライバシー →
+              位置情報サービスを確認してください）{" "}
             </p>
           )}
           <p>
