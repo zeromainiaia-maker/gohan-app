@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const shops = [
+const FAKE_SHOPS = [
   {
     id: 1,
     name: "らーめん太郎",
@@ -50,9 +50,12 @@ function ShopList({ shops, onSelect }) {
 function ShopItem({ shop, onSelect }) {
   return (
     <li onClick={() => onSelect(shop)}>
-      {shop.name} ({shop.genre}/
-      {shop.distance < 1000 ? shop.distance + "m" : shop.distance / 1000 + "km"}
-      /{shop.rating.toFixed(1)}/{shop.hours})
+      {shop.name}（{shop.genre}／
+      {shop.distance < 1000
+        ? shop.distance + "m"
+        : (shop.distance / 1000).toFixed(1) + "km"}
+      ／⭐{shop.rating?.toFixed(1) ?? "評価なし"}／
+      {shop.openNow ? "営業中" : "営業時間外"}）
     </li>
   );
 }
@@ -70,24 +73,21 @@ function App() {
   const [screen, setScreen] = useState("start");
   const [selectedShop, setSelectedShop] = useState(null);
   const [location, setLocation] = useState(null);
+  const [shops, setShops] = useState([]);
+
+  async function searchAt(lat, lng, isDefault) {
+    setLocation({ lat, lng, isDefault });
+    const response = await fetch(`/api/search?lat=${lat}&lng=${lng}`);
+    const data = await response.json();
+    setShops(data.shops ?? []);
+    setScreen("list");
+  }
 
   function handleSearch() {
     navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setLocation({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-          isDefault: false,
-        });
-        setScreen("list");
-      },
-      () => {
-        setLocation({
-          ...NAGOYA_STATION,
-          isDefault: true,
-        });
-        setScreen("list");
-      },
+      (position) =>
+        searchAt(position.coords.latitude, position.coords.longitude, false), // 成功：本当の現在地
+      () => searchAt(NAGOYA_STATION.lat, NAGOYA_STATION.lng, true), // 失敗：名古屋駅
       { timeout: 10000 },
     );
   }
