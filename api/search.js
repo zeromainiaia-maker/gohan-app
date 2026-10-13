@@ -16,6 +16,21 @@ export async function GET(request) {
   const lat = Number(url.searchParams.get("lat"));
   const lng = Number(url.searchParams.get("lng"));
 
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+    return Response.json(
+      { error: "lat と lng を数値で指定してください" },
+      { status: 400 },
+    );
+  }
+
+  if (!response.ok) {
+    console.error("Places API error:", data);
+    return Response.json(
+      { error: "お店の検索に失敗しました" },
+      { status: 502 },
+    );
+  }
+
   // ② Google Places API に問い合わせる
   const response = await fetch(
     "https://places.googleapis.com/v1/places:searchNearby",
