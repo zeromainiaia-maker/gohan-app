@@ -35,6 +35,8 @@ const shops = [
   },
 ];
 
+const NAGOYA_STATION = { lat: 35.1709, lng: 136.8815 };
+
 function ShopList({ shops, onSelect }) {
   return (
     <ul>
@@ -67,15 +69,42 @@ function ShopDetail({ shop }) {
 function App() {
   const [screen, setScreen] = useState("start");
   const [selectedShop, setSelectedShop] = useState(null);
+  const [location, setLocation] = useState(null);
+
+  function handleSearch() {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setLocation({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+          isDefault: false,
+        });
+        setScreen("list");
+      },
+      () => {
+        setLocation({
+          ...NAGOYA_STATION,
+          isDefault: true,
+        });
+        setScreen("list");
+      },
+      { timeout: 10000 },
+    );
+  }
+
   return (
     <div>
       <h1>近くのごはん探し</h1>
-      {screen === "start" && (
-        <button onClick={() => setScreen("list")}>検索</button>
-      )}
+      {screen === "start" && <button onClick={handleSearch}>検索</button>}
       {screen === "list" && (
         <>
           <button onClick={() => setScreen("start")}>戻る</button>
+          {location.isDefault && (
+            <p>現在地を取得できなかったため、名古屋駅周辺を表示しています </p>
+          )}
+          <p>
+            現在地：{location.lat}, {location.lng}
+          </p>
           <ShopList
             shops={shops}
             onSelect={(shop) => {
