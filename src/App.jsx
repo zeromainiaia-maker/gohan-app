@@ -100,7 +100,10 @@ function App() {
         <>
           <button onClick={() => setScreen("start")}>戻る</button>
           {location.isDefault && (
-            <p>現在地を取得できなかったため、名古屋駅周辺を表示しています </p>
+            <p>
+              現在地を取得できなかったため、名古屋駅周辺を表示していますiPhone
+              の設定 → プライバシー → 位置情報サービスを確認してください）{" "}
+            </p>
           )}
           <p>
             現在地：{location.lat}, {location.lng}
